@@ -39,6 +39,7 @@ show_error_context = true
 src = ['src', 'tests']
 line-length = 88
 select = [
+    # keep-sorted start
     'ASYNC',
     'B',
     'B9',
@@ -77,8 +78,10 @@ select = [
     'UP',
     'W',
     'YTT',
+    # keep-sorted end
 ]
 ignore = [
+    # keep-sorted start
     'PGH003', # Specific rule codes not always available
     'RET504', # Sometimes worth doing for readability
     'RET505', # Currently has a bug
@@ -87,6 +90,7 @@ ignore = [
     'SIM300', # Doesn't work well with Pandas
     'TD002', # Not for prototyping
     'TD003', # Not for prototyping
+    # keep-sorted end
 ]
 namespace-packages = ["src", "docs"]
 

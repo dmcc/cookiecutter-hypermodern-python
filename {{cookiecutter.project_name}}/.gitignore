@@ -1,3 +1,4 @@
+# keep-sorted start
 *.swp
 .mypy_cache/
 .pdm-python
@@ -12,3 +13,4 @@
 /src/*.egg-info/
 __pycache__/
 requirements.txt
+# keep-sorted end
