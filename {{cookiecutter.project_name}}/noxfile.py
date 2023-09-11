@@ -7,23 +7,15 @@ from pathlib import Path
 from textwrap import dedent
 
 import nox
+from nox import Session
+from nox import session
 
 
-try:
-    from nox_poetry import Session
-    from nox_poetry import session
-except ImportError:
-    message = f"""\
-    Nox failed to import the 'nox-poetry' package.
-
-    Please install it using the following command:
-
-    {sys.executable} -m pip install nox-poetry"""
-    raise SystemExit(dedent(message)) from None
+os.environ.update({"PDM_IGNORE_SAVED_PYTHON": "1"})
 
 
 package = "{{cookiecutter.package_name}}"
-python_versions = ["3.10", "3.9", "3.8", "3.7"]
+python_versions = ["3.10"]
 nox.needs_version = ">= 2021.6.6"
 nox.options.sessions = (
     "pre-commit",
@@ -46,7 +38,7 @@ def activate_virtualenv_in_precommit_hooks(session: Session) -> None:
     Args:
         session: The Session object.
     """
-    assert session.bin is not None  # nosec
+    assert session.bin is not None  # nosec  # noqa: S101
 
     # Only patch hooks containing a reference to this session's bindir. Support
     # quoting rules for Python and bash, but strip the outermost quotes so we
@@ -120,14 +112,11 @@ def precommit(session: Session) -> None:
         "--show-diff-on-failure",
     ]
     session.install(
-        "bandit",
         "black",
         "darglint",
         "ruff",
-        "pep8-naming",
         "pre-commit",
         "pre-commit-hooks",
-        "pyupgrade",
     )
     session.run("pre-commit", *args)
     if args and args[0] == "install":
@@ -137,16 +126,24 @@ def precommit(session: Session) -> None:
 @session(python=python_versions[0])
 def safety(session: Session) -> None:
     """Scan dependencies for insecure packages."""
-    requirements = session.poetry.export_requirements()
+    session.run("pdm", "export", "-o", "requirements.txt", "--without-hashes")
     session.install("safety")
-    session.run("safety", "check", "--full-report", f"--file={requirements}")
+    session.run("safety", "check", "--full-report", "--file=requirements.txt")
 
 
 @session(python=python_versions)
 def mypy(session: Session) -> None:
     """Type-check using mypy."""
+    session.run_always(
+        "pdm",
+        "install",
+        "--group",
+        "dev",
+        "--group",
+        "test",
+        external=True,
+    )
     args = session.posargs or ["src", "tests", "docs/conf.py"]
-    session.install(".")
     session.install("mypy", "pytest")
     session.run("mypy", *args)
     if not session.posargs:
@@ -156,7 +153,15 @@ def mypy(session: Session) -> None:
 @session(python=python_versions)
 def tests(session: Session) -> None:
     """Run the test suite."""
-    session.install(".")
+    session.run_always(
+        "pdm",
+        "install",
+        "--group",
+        "dev",
+        "--group",
+        "test",
+        external=True,
+    )
     session.install("coverage[toml]", "pytest", "pygments")
     try:
         session.run("coverage", "run", "--parallel", "-m", "pytest", *session.posargs)
@@ -181,7 +186,15 @@ def coverage(session: Session) -> None:
 @session(python=python_versions[0])
 def typeguard(session: Session) -> None:
     """Runtime type checking using Typeguard."""
-    session.install(".")
+    session.run_always(
+        "pdm",
+        "install",
+        "--group",
+        "dev",
+        "--group",
+        "test",
+        external=True,
+    )
     session.install("pytest", "typeguard", "pygments")
     session.run("pytest", f"--typeguard-packages={package}", *session.posargs)
 

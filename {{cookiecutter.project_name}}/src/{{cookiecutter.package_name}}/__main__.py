@@ -5,7 +5,7 @@ import click
 @click.command()
 @click.version_option()
 def main() -> None:
-    """{{cookiecutter.friendly_name}}."""
+    """Run {{cookiecutter.friendly_name}}."""
 
 
 if __name__ == "__main__":

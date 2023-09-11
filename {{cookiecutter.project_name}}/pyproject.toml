@@ -6,7 +6,9 @@ authors = [
     {name = "{{cookiecutter.author}}", email = "{{cookiecutter.email}}"},
 ]
 license = {text = "{{cookiecutter.license}}"}
-dependencies = []
+dependencies = [
+        "click>=8.1.7",
+]
 requires-python = ">=3.10"
 readme = "README.md"
 
@@ -35,7 +37,7 @@ show_error_context = true
 
 [tool.ruff]
 src = ['src', 'tests']
-line-length = 80
+line-length = 88
 select = [
     'ASYNC',
     'B',
@@ -86,7 +88,7 @@ ignore = [
     'TD002', # Not for prototyping
     'TD003', # Not for prototyping
 ]
-namespace-packages = ["src"]
+namespace-packages = ["src", "docs"]
 
 [tool.ruff.mccabe]
 max-complexity = 10
@@ -102,8 +104,35 @@ max-complexity = 10
 ]
 
 [tool.ruff.pydocstyle]
-convention = "numpy-notypes"
+convention = "numpy"
 
 [tool.ruff.isort]
 force-single-line = true
 lines-after-imports = 2
+
+[tool.pdm.dev-dependencies]
+test = [
+    "nox>=2023.4.22",
+    "pytest>=7.4.0",
+    "coverage>=7.3.0",
+    "xdoctest>=1.1.1",
+]
+dev = [
+    "Pygments>=2.16.1",
+    "black>=23.7.0",
+    "darglint>=1.8.1",
+    "ruff>=0.0.285",
+    "mypy>=1.5.1",
+    "pep8-naming>=0.13.3",
+    "pre-commit>=3.3.3",
+    "pre-commit-hooks>=4.4.0",
+    "safety>=2.3.4",
+    "typeguard>=4.1.2",
+]
+docs = [
+    "furo>=2023.8.19",
+    "sphinx>=7.2.2",
+    "sphinx-autobuild>=2021.3.14",
+    "sphinx-click>=5.0.1",
+    "myst-parser>=2.0.0",
+]
