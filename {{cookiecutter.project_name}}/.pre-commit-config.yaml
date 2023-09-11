@@ -50,3 +50,7 @@ repos:
     rev: v2.6.0
     hooks:
       - id: prettier
+  - repo: https://github.com/google/keep-sorted
+    rev: v0.1.0
+    hooks:
+      - id: keep-sorted
